@@ -13,8 +13,6 @@ public class PageDto {
 
     private String title;
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private Book books;
 
 }

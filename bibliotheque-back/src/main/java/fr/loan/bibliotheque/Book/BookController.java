@@ -54,7 +54,6 @@ public class BookController {
     @PostMapping("/{bookId}/categories")
     public ResponseEntity<Book> addCategoriesForBook(@PathVariable Integer bookId, @RequestBody List<Integer> categoriesId){
         Book book = bookService.addCategoriesForBook(bookId, categoriesId);
-
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 

@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +29,16 @@ public class PageService {
 
     public Mono<Page> createPage(PageDto pageDto){
         Optional<Book> book = bookRepository.findById(pageDto.getBooks().getId());
+        Date date = new Date();
+        LocalDateTime localDateTime = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
         if (book.isPresent()){
             Page page = new Page(
                     pageDto.getTitle(),
                     pageDto.getContent(),
-                    pageDto.getCreatedAt(),
-                    pageDto.getUpdatedAt(),
+                    localDateTime,
+                    localDateTime,
                     book.get()
             );
             return Mono.just(pageRepository.save(page));
@@ -47,12 +50,17 @@ public class PageService {
     }
 
     public Mono<Page> updatePage(Integer id, PageDto pageDto){
+        Date date = new Date();
+        LocalDateTime localDateTime = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        Page currentPage = pageRepository.findById(id).orElseThrow(null);
         Page page = new Page(
                 id,
                 pageDto.getTitle(),
                 pageDto.getContent(),
-                pageDto.getCreatedAt(),
-                pageDto.getUpdatedAt(),
+                currentPage.getCreatedAt(),
+                localDateTime,
                 pageDto.getBooks()
         );
         return Mono.just(pageRepository.save(page));

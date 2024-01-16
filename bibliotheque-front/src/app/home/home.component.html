@@ -1,0 +1,62 @@
+<div class="body">
+  <header id="header-wrapper" >
+    <div><h1>Biblio'Tech</h1></div>
+    <nav></nav>
+    <div *ngIf="!userData">
+      <a (click)="navigateToSignIn($event)">se connecter</a>
+      <a href="" role="button" (click)="navigateToRegister($event)">s'inscrire</a>
+    </div>
+    <div *ngIf="userData" id="userData-wrapper">
+      <h2>{{ userData.firstName}} {{userData.lastName}}</h2>
+      <a (click)="logOut($event)">Se déconnecter</a>
+    </div>
+  </header>
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<style lang="scss">
+
+  :root, [data-theme="light"], data {
+    --form-element-disabled-background-color: #2196f3; /* Remplacez #2196f3 par la couleur de votre choix */
+  }
+
+
+  #header-wrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 90px;
+    padding: 0 20px;
+    background-color: #5E5E5E;
+
+    h1{
+      margin: 0;
+      color: white;
+
+    }
+
+    div{
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+  }
+  #userData-wrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    h2{
+      margin: 0;
+      color: white;
+      font-size: 25px;
+    }
+    a{
+      font-size: 15px;
+    }
+  }
+</style>

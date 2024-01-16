@@ -1,8 +1,12 @@
 package fr.loan.bibliotheque.Authentication;
 
 import fr.loan.bibliotheque.Role.RoleRepository;
+import fr.loan.bibliotheque.Security.JwtGenerator;
 import fr.loan.bibliotheque.User.Dto.LoginDto;
+import fr.loan.bibliotheque.User.User;
 import fr.loan.bibliotheque.User.UserRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,16 +14,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
@@ -32,16 +35,9 @@ public class AuthController {
         return authService.register(registerDto);
     }
 
-    @GetMapping("/test")
-    @PreAuthorize("hasAuthority('USER')")
-    public String test(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            // L'utilisateur est authentifié
-            String username = authentication.getName();
-            return username;
-            // Faites quelque chose avec le nom d'utilisateur ou d'autres détails d'authentification
-        }
-        return "";
-    }
+   @PostMapping("/validToken")
+    public ResponseEntity<Mono<User>> validateToken(@RequestBody String token){
+        Mono<User> user = authService.validateToken(token);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+   }
 }

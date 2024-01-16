@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 
@@ -50,6 +52,11 @@ public class AuthService {
 
         userRepository.save(user);
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
+    }
+    public Mono<User> validateToken(String token){
+        String email = jwtGenerator.getEmailFromJwt(token);
+        return Mono.justOrEmpty(userRepository.findByEmail(email))
+                .switchIfEmpty(Mono.error(new ErrorResponseException(HttpStatus.NOT_FOUND)));
     }
 
 }

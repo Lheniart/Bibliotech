@@ -22,6 +22,6 @@ public class BookOut {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private final List<Page> pages = new ArrayList<>();
-    private final List<Categories> categories = new ArrayList<>();
+    private List<Categories> categories = new ArrayList<>();
     private List<SimpleUserDTO> users;
 }

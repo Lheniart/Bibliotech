@@ -29,7 +29,7 @@ public class Book {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "resume")
+    @Column(name = "resume", columnDefinition="TEXT")
     private String resume;
 
     @Column(name = "image")

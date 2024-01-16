@@ -21,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -51,8 +52,8 @@ public class SecurityConfig {
                         .configurationSource(request -> {
                             CorsConfiguration configuration = new CorsConfiguration();
                             configuration.setAllowedOrigins(Collections.singletonList("*"));
-                            configuration.setAllowedMethods(Collections.singletonList("*"));
-                            configuration.setAllowedHeaders(Collections.singletonList("*"));
+                            configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                            configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                             return configuration;
                         }))
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(authEntryPoint))
@@ -61,6 +62,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/auth/**","book","book/{id}").permitAll();
+                    auth.requestMatchers(HttpMethod.GET,"/categories/**", "categories/{id}").permitAll();
                     auth.requestMatchers("/categories/**","/user/**").hasAuthority("ADMIN");
                     auth.anyRequest().hasAuthority("USER");
                 })

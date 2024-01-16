@@ -1,0 +1,12 @@
+<article>
+  <form >
+    <label for="email">Email address</label>
+    <input type="email" id="email" name="email" [(ngModel)]="signInDto.email"  placeholder="adresse mail" required>
+    <label for="password">Mot de passe</label>
+    <input type="password" id="password" name="password" [(ngModel)]="signInDto.password" placeholder="Mot de passe">
+
+    <p id="errorMessage">{{ errorMessage }}</p>
+    <button type="submit" (click)="signIn($event)">Submit</button>
+  </form>
+  <a (click)="navigateBack($event)">retour</a>
+</article>

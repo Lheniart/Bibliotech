@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,8 +44,9 @@ public class BookService {
                         book.getResume(),
                         book.getImage(),
                         book.getCreatedAt(),
-                        book.getUpdatedAt()
-                        ,convertToSimpleUserDTOs(book.getUsers())))
+                        book.getUpdatedAt(),
+                        book.getCategories(),
+                        convertToSimpleUserDTOs(book.getUsers())))
                 .collect(Collectors.toList());
     }
     private List<SimpleUserDTO> convertToSimpleUserDTOs(List<User> users) {
@@ -59,7 +63,8 @@ public class BookService {
                         book1.getResume(),
                         book1.getImage(),
                         book1.getCreatedAt(),
-                        book1.getUpdatedAt()
+                        book1.getUpdatedAt(),
+                        book.getCategories()
                         ,convertToSimpleUserDTOs(book1.getUsers())));
     }
 
@@ -74,13 +79,17 @@ public class BookService {
         List<Integer> usersId = users.stream()
                 .map(User::getId)
                 .toList();
+        Date date = new Date();
+        LocalDateTime localDateTime = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
         users = userRepository.findAllById(usersId);
         Book book = new Book(
                 bookDto.getTitle(),
                 bookDto.getResume(),
                 bookDto.getImage(),
-                bookDto.getCreatedAt(),
-                bookDto.getUpdatedAt(),
+                localDateTime,
+                localDateTime,
                 categories,
                 users
         );
@@ -95,6 +104,10 @@ public class BookService {
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
             Optional<User> optionalUser  = userRepository.findByEmail(principal.getUsername());
             User currentUser = optionalUser.orElse(null);
+            Date date = new Date();
+            LocalDateTime localDateTime = date.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
             return Mono.justOrEmpty(bookRepository.findById(id))
                     .flatMap(existingBook -> {
                         // Vérifier si l'utilisateur actuel est le propriétaire du livre ou un administrateur
@@ -104,8 +117,8 @@ public class BookService {
                             existingBook.setTitle(bookDto.getTitle());
                             existingBook.setResume(bookDto.getResume());
                             existingBook.setImage(bookDto.getImage());
-                            existingBook.setCreatedAt(bookDto.getCreatedAt());
-                            existingBook.setUpdatedAt(bookDto.getUpdatedAt());
+                            existingBook.setCreatedAt(existingBook.getCreatedAt());
+                            existingBook.setUpdatedAt(localDateTime);
 
                             // Enregistrer les modifications dans la base de données
                             return Mono.just(bookRepository.save(existingBook));
