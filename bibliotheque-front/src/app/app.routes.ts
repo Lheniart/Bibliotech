@@ -4,6 +4,7 @@ import {SignInComponent} from "./sign-in/sign-in.component";
 import {RegisterComponent} from "./register/register.component";
 import {AccueilComponent} from "./accueil/accueil.component";
 import {CreateBookComponent} from "./create-book/create-book.component";
+import {UpdateBookComponent} from "./update-book/update-book.component";
 
 export const routes: Routes = [
   {
@@ -17,6 +18,10 @@ export const routes: Routes = [
       {
         path: "createBook",
         component: CreateBookComponent
+      },
+      {
+        path: "updateBook/:id",
+        component : UpdateBookComponent
       }
     ]
   },

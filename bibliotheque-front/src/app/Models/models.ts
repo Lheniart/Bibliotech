@@ -4,6 +4,7 @@ export interface User{
   firstName : string,
   lastName: string,
   roles : Role[],
+  checked?: boolean
 }
 export interface Role{
   id : number,
@@ -11,6 +12,7 @@ export interface Role{
 }
 
 export interface Book{
+  id : number | undefined
   title : string,
   resume: string,
   image: string,
@@ -18,12 +20,19 @@ export interface Book{
   updatedAt : string,
   pages : Page[],
   categories : Category[],
-  user: User[]
+  users: User[]
+}
+export interface BookDto{
+  title : string,
+  resume: string,
+  image: string,
+  categories: Category[],
+  users: User[]
 }
 export interface Category{
-  id: number,
+  id: number
   label : string
-  checked? : boolean
+  checked : boolean
 }
 export interface Page{
   id: number,

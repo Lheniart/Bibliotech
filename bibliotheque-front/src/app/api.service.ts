@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {catchError, Observable, of, tap, throwError} from "rxjs";
 import {resolve} from "@angular/compiler-cli";
 import {error} from "@angular/compiler-cli/src/transformers/util";
@@ -9,16 +9,34 @@ import {error} from "@angular/compiler-cli/src/transformers/util";
 })
 export class ApiService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
+
   private baseUrl = "http://localhost:8080"
-  signIn(signInDto: Object){
+
+  signIn(signInDto: Object) {
     return this.http.post(`${this.baseUrl}/auth/login`, signInDto).pipe(
       catchError(err => {
         return throwError(() => new Error('Identifiant incorrecte'));
       })
     )
   }
-  getAllBook(){
+
+  register(registerDto: object) {
+    console.log("test")
+    return this.http.post(`${this.baseUrl}/auth/register`, registerDto, {responseType: 'text'}).pipe(
+      tap(response => {
+        console.log('API Response:', response);
+      }),
+      catchError(err => {
+        console.log(err)
+        return throwError(() => new Error(err.error));
+      })
+    )
+
+  }
+
+  getAllBook() {
     return this.http.get("http://localhost:8080/book").pipe(
       catchError(err => {
         console.log(err);
@@ -26,6 +44,16 @@ export class ApiService {
       })
     )
   }
+
+  getBookById(bookId: number) {
+    return this.http.get(`http://localhost:8080/book/${bookId}`).pipe(
+      catchError(err => {
+        console.log(err);
+        return of();
+      })
+    )
+  }
+
   getAllCategory() {
     return this.http.get("http://localhost:8080/categories").pipe(
       catchError(err => {
@@ -34,46 +62,82 @@ export class ApiService {
       })
     )
   }
+
   validateToken(): Observable<Object> {
     let token = localStorage.getItem('token')
-    if (token){
-      return this.http.post("http://localhost:8080/auth/validToken",token).pipe(
-      catchError(err => {
-        console.log(err);
-        return of();
-      })
+    if (token) {
+      return this.http.post("http://localhost:8080/auth/validToken", token).pipe(
+        catchError(err => {
+          console.log(err);
+          return of();
+        })
       )
-    }
-    else {
+    } else {
       return throwError(() => new Error('Token non validé'));
     }
   }
-  createBook(data: Object) : Observable<Object>{
+
+  createBook(data: Object): Observable<Object> {
     let token = localStorage.getItem('token')
 
-    if (token){
+    if (token) {
       const httpOptions = {
         headers: new HttpHeaders({
-          'Content-Type':  'application/json',
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         })
       };
-      return this.http.post("http://localhost:8080/book",data, httpOptions).pipe(
+      return this.http.post("http://localhost:8080/book", data, httpOptions).pipe(
         tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
       )
-    }
-    else {
+    } else {
       return throwError(() => new Error('Token non validé'));
     }
   }
+
+  updateBook(bookId: number, data: Object): Observable<Object> {
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      console.log(data)
+      return this.http.put(`http://localhost:8080/book/${bookId}`, data, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Non connecté'));
+    }
+  }
+
+  getAllUser() {
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.get(`http://localhost:8080/user`, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Non connecté'));
+    }
+  }
+
 }
-interface User{
-  id : number,
-  email: string,
-  firstName : string,
-  lastName: string,
-  roles : [],
-}
+

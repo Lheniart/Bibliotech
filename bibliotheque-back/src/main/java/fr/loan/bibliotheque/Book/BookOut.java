@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class BookOut {
 
+    private Integer id;
     private String title;
     private String resume;
     private String image;

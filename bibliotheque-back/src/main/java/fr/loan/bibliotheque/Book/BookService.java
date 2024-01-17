@@ -40,6 +40,7 @@ public class BookService {
 
         return books.stream()
                 .map(book -> new BookOut(
+                        book.getId(),
                         book.getTitle(),
                         book.getResume(),
                         book.getImage(),
@@ -59,6 +60,7 @@ public class BookService {
         Book book =  bookRepository.findById(id).orElseThrow(null);
         return Mono.justOrEmpty(book)
                 .map(book1 -> new BookOut(
+                        book1.getId(),
                         book1.getTitle(),
                         book1.getResume(),
                         book1.getImage(),
@@ -103,22 +105,25 @@ public class BookService {
             org.springframework.security.core.userdetails.User principal =
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
             Optional<User> optionalUser  = userRepository.findByEmail(principal.getUsername());
-            User currentUser = optionalUser.orElse(null);
+            User currentUser = optionalUser.orElseThrow(null);
             Date date = new Date();
             LocalDateTime localDateTime = date.toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDateTime();
+            Role admin = roleRepository.findByName("ADMIN").orElseThrow(null);
             return Mono.justOrEmpty(bookRepository.findById(id))
                     .flatMap(existingBook -> {
                         // Vérifier si l'utilisateur actuel est le propriétaire du livre ou un administrateur
                         assert currentUser != null;
-                        if (currentUser.getRoles().contains("ADMIN") || existingBook.getUsers().contains(currentUser)) {
+                        if (currentUser.getRoles().contains(admin) || existingBook.getUsers().contains(currentUser)) {
                             // Mettre à jour les propriétés du livre avec les nouvelles valeurs
                             existingBook.setTitle(bookDto.getTitle());
                             existingBook.setResume(bookDto.getResume());
                             existingBook.setImage(bookDto.getImage());
                             existingBook.setCreatedAt(existingBook.getCreatedAt());
                             existingBook.setUpdatedAt(localDateTime);
+                            existingBook.setCategories(bookDto.getCategories());
+                            existingBook.setUsers(bookDto.getUsers());
 
                             // Enregistrer les modifications dans la base de données
                             return Mono.just(bookRepository.save(existingBook));
@@ -176,6 +181,7 @@ public class BookService {
             Optional<User> optionalUser  = userRepository.findByEmail(principal.getUsername());
             User currentUser = optionalUser.orElse(null);
             Role admin = roleRepository.findByName("ADMIN").orElseThrow(null);
+
             if (currentUser.getRoles().contains(admin) || book.getUsers().contains(currentUser)){
                 List<Categories> categories = categoriesRepository.findAllById(categoriesId);
                 book.setCategories(categories);

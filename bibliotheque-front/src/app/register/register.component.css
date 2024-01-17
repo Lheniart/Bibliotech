@@ -15,3 +15,9 @@ form{
   width: clamp(150px, 100%, 500px);
   align-content: center;
 }
+
+#errorMessage{
+  color: red;
+  text-align: center;
+  font-weight: 500;
+}

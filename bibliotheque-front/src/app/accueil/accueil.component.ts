@@ -4,7 +4,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {BookCardComponent} from "../book-card/book-card.component";
 import {FormsModule} from "@angular/forms";
 import {Book, Category, User} from "../Models/models";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 
 
 @Component({
@@ -14,11 +14,12 @@ import {Router} from "@angular/router";
     NgForOf,
     BookCardComponent,
     NgIf,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   template: `
     <article class="grid" *ngIf="userData"  >
-      <a role="button" href="" (click)="navigateToCreateBook($event)">Créer un livre</a>
+      <a role="button" href="" routerLink="/createBook">Créer un livre</a>
     </article>
     <article>
       <details class="dropdown">
@@ -48,6 +49,8 @@ import {Router} from "@angular/router";
         flex-direction: row;
         gap: 100px;
         flex-wrap: wrap;
+
+        justify-content: center;
       }
     </style>
 
@@ -61,6 +64,7 @@ export class AccueilComponent {
   protected userData: User | undefined
   constructor(private apiService: ApiService,private router: Router) {
   }
+
   updateCheckedCategories(category: Category) {
     if (category.checked) {
       this.categoryFilter.push(category.id);
@@ -77,11 +81,6 @@ export class AccueilComponent {
       !this.categoryFilter.length ||
       book.categories.some((categoryId) => this.categoryFilter.includes(categoryId.id))
     );
-  }
-
-  navigateToCreateBook(event:Event){
-    event.preventDefault();
-    this.router.navigateByUrl("/createBook");
   }
 
   ngOnInit(){

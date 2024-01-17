@@ -54,7 +54,7 @@ import {Router} from "@angular/router";
     </article>
 
   `,
-  styles : ["img {margin: 40px 0;} #errorMessage{color: red;text-align: center; font-weight: 500}"]
+  styles : ["img {margin: 40px 0;} #errorMessage{color: red;text-align: center; font-weight: 500} img{max-height: 500px}"]
 })
 export class CreateBookComponent {
   constructor(private apiService: ApiService,private router: Router) {
