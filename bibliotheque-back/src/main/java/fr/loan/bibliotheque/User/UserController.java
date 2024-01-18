@@ -1,9 +1,7 @@
 package fr.loan.bibliotheque.User;
 
 import fr.loan.bibliotheque.Book.Book;
-import fr.loan.bibliotheque.User.Dto.LoginDto;
-import fr.loan.bibliotheque.User.Dto.UserDto;
-import fr.loan.bibliotheque.User.Dto.UserOut;
+import fr.loan.bibliotheque.User.Dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +38,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public Mono<UserOut> updateUser(@PathVariable Integer id, @RequestBody UserDto userDto){
-        return userService.updateUser(id, userDto)
+    public Mono<UserOut> updateUser(@PathVariable Integer id, @RequestBody UpdateUserDto updateUserDto){
+        return userService.updateUser(id, updateUserDto)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST)));
+    }
+    @PutMapping("resetPassword/{id}")
+    public Mono<UserOut> resetPassword(@PathVariable Integer id, @RequestBody ResetPassDto resetPassDto){
+        return userService.resetPassword(id, resetPassDto)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST)));
     }
 

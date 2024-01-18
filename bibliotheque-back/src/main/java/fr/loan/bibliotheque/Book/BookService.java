@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -50,14 +51,15 @@ public class BookService {
                         convertToSimpleUserDTOs(book.getUsers())))
                 .collect(Collectors.toList());
     }
+
     private List<SimpleUserDTO> convertToSimpleUserDTOs(List<User> users) {
         return users.stream()
                 .map(user -> new SimpleUserDTO(user.getId() /*, autres champs dont vous avez besoin */))
                 .collect(Collectors.toList());
     }
 
-    public Mono<BookOut> getBookById(Integer id){
-        Book book =  bookRepository.findById(id).orElseThrow(null);
+    public Mono<BookOut> getBookById(Integer id) {
+        Book book = bookRepository.findById(id).orElseThrow(null);
         return Mono.justOrEmpty(book)
                 .map(book1 -> new BookOut(
                         book1.getId(),
@@ -67,10 +69,10 @@ public class BookService {
                         book1.getCreatedAt(),
                         book1.getUpdatedAt(),
                         book.getCategories()
-                        ,convertToSimpleUserDTOs(book1.getUsers())));
+                        , convertToSimpleUserDTOs(book1.getUsers())));
     }
 
-    public Mono<Book> createBook(BookDto bookDto){
+    public Mono<Book> createBook(BookDto bookDto) {
         List<Categories> categories = bookDto.getCategories();
         List<Integer> categoriesId = categories.stream()
                 .map(Categories::getId)
@@ -98,13 +100,13 @@ public class BookService {
         return Mono.just(bookRepository.save(book));
     }
 
-    public Mono<Book> updateBook(Integer id, BookDto bookDto){
+    public Mono<Book> updateBook(Integer id, BookDto bookDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication.isAuthenticated()) {
             org.springframework.security.core.userdetails.User principal =
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-            Optional<User> optionalUser  = userRepository.findByEmail(principal.getUsername());
+            Optional<User> optionalUser = userRepository.findByEmail(principal.getUsername());
             User currentUser = optionalUser.orElseThrow(null);
             Date date = new Date();
             LocalDateTime localDateTime = date.toInstant()
@@ -139,24 +141,23 @@ public class BookService {
     }
 
 
-    public ResponseEntity<String> deleteBookById(Integer id){
+    public ResponseEntity<String> deleteBookById(Integer id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.isAuthenticated()){
+        if (authentication.isAuthenticated()) {
             org.springframework.security.core.userdetails.User principal =
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-            Optional<User> optionalUser  = userRepository.findByEmail(principal.getUsername());
+            Optional<User> optionalUser = userRepository.findByEmail(principal.getUsername());
             User currentUser = optionalUser.orElse(null);
             Book book = bookRepository.findById(id).orElse(null);
             Role admin = roleRepository.findByName("ADMIN").orElseThrow(null);
-            if (bookRepository.existsById(id)){
-                if (currentUser.getRoles().contains(admin) || book.getUsers().contains(currentUser)){
+            if (bookRepository.existsById(id)) {
+                if (currentUser.getRoles().contains(admin) || book.getUsers().contains(currentUser)) {
 
                     try {
                         bookRepository.deleteById(id);
                         return new ResponseEntity<>("Book " + id + " is deleted", HttpStatus.OK);
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         return new ResponseEntity<>("Book " + id + " not deleted", HttpStatus.BAD_REQUEST);
                     }
                 }
@@ -172,17 +173,17 @@ public class BookService {
     public Book addCategoriesForBook(Integer bookId, List<Integer> categoriesId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.isAuthenticated()){
+        if (authentication.isAuthenticated()) {
             Book book = bookRepository.findById(bookId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
             org.springframework.security.core.userdetails.User principal =
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-            Optional<User> optionalUser  = userRepository.findByEmail(principal.getUsername());
+            Optional<User> optionalUser = userRepository.findByEmail(principal.getUsername());
             User currentUser = optionalUser.orElse(null);
             Role admin = roleRepository.findByName("ADMIN").orElseThrow(null);
 
-            if (currentUser.getRoles().contains(admin) || book.getUsers().contains(currentUser)){
+            if (currentUser.getRoles().contains(admin) || book.getUsers().contains(currentUser)) {
                 List<Categories> categories = categoriesRepository.findAllById(categoriesId);
                 book.setCategories(categories);
 
@@ -191,22 +192,21 @@ public class BookService {
 
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
-        }
-        else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
-    public Book addUsersForBook(Integer bookId, List<Integer> usersId){
+    public Book addUsersForBook(Integer bookId, List<Integer> usersId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.isAuthenticated()){
+        if (authentication.isAuthenticated()) {
             Book book = bookRepository.findById(bookId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
             org.springframework.security.core.userdetails.User principal =
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-            Optional<User> optionalUser  = userRepository.findByEmail(principal.getUsername());
+            Optional<User> optionalUser = userRepository.findByEmail(principal.getUsername());
             User currentUser = optionalUser.orElse(null);
             Role admin = roleRepository.findByName("ADMIN").orElseThrow(null);
-            if (currentUser.getRoles().contains(admin) || book.getUsers().contains(currentUser)){
+            if (currentUser.getRoles().contains(admin) || book.getUsers().contains(currentUser)) {
                 List<User> users = userRepository.findAllById(usersId);
 
                 book.setUsers(users);
@@ -214,7 +214,12 @@ public class BookService {
                 return bookRepository.save(book);
             }
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-        else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    public List<Book> getBookByUserId(Integer userId) {
+
+        return bookRepository.findByUsers_Id(userId);
+
     }
 }

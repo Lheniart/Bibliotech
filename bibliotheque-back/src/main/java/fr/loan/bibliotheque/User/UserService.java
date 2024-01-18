@@ -4,6 +4,8 @@ import fr.loan.bibliotheque.Book.Book;
 import fr.loan.bibliotheque.Book.BookRepository;
 import fr.loan.bibliotheque.Role.Role;
 import fr.loan.bibliotheque.Role.RoleRepository;
+import fr.loan.bibliotheque.User.Dto.ResetPassDto;
+import fr.loan.bibliotheque.User.Dto.UpdateUserDto;
 import fr.loan.bibliotheque.User.Dto.UserDto;
 import fr.loan.bibliotheque.User.Dto.UserOut;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +71,7 @@ public class UserService {
 
     }
 
-    public Mono<UserOut> updateUser(Integer id, UserDto userDto) {
+    public Mono<UserOut> updateUser(Integer id, UpdateUserDto userDto) {
         Optional<User> optionalInitialUser = userRepository.findById(id);
 
         if (optionalInitialUser.isPresent()) {
@@ -80,7 +82,7 @@ public class UserService {
                     userDto.getFirstName(),
                     userDto.getLastName(),
                     userDto.getEmail(),
-                    passwordEncoder.encode(userDto.getPassword()),
+                    initialUser.getPassword(),
                     initialUser.getRoles()
             );
 
@@ -98,6 +100,33 @@ public class UserService {
             return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND));
         }
 
+    }
+    public Mono<UserOut> resetPassword(Integer id, ResetPassDto resetPassDto){
+        Optional<User> optionalInitialUser = userRepository.findById(id);
+
+        if (optionalInitialUser.isPresent()) {
+            User initialUser = optionalInitialUser.get();
+
+            User user = new User(
+                    id,
+                    initialUser.getFirstName(),
+                    initialUser.getLastName(),
+                    initialUser.getEmail(),
+                    passwordEncoder.encode(resetPassDto.getPassword()),
+                    initialUser.getRoles()
+            );
+
+            return Mono.just(userRepository.save(user))
+                    .map(user1 -> new UserOut(
+                            user1.getId(),
+                            user1.getFirstName(),
+                            user1.getLastName(),
+                            user1.getEmail(),
+                            user1.getRoles()
+                    ));
+        } else{
+            return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND));
+        }
     }
 
     public ResponseEntity<String> deleteUser(Integer id) {

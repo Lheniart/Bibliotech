@@ -21,9 +21,10 @@ import {Observable} from "rxjs";
       <details>
         <summary>plus de details</summary>
         <p> {{ book.resume }}</p>
+
         <a role="button" href="" (click)="navigateToUpdateBook($event, book.id)" *ngIf="condition">Modifier le livre</a>
       </details>
-
+      <a *ngIf="userData" routerLink="/book/{{book.id}}">Lire le livre</a>
     </article>
     <style>
       article {
@@ -59,11 +60,7 @@ export class BookCardComponent {
     this.apiService.validateToken().subscribe(r =>{
       //@ts-ignore
       this.userData = r
-      console.log(this.userData)
-      console.log("test")
-      console.log(this.book.users)
       this.condition = (this.userData && (this.userData.roles.some(role =>role.name ==="ADMIN" ) || (this.book.users.some(user => user.id === this.userData.id))))
-      console.log(this.condition)
     })
 
 

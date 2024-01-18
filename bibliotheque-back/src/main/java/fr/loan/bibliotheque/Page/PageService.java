@@ -28,7 +28,7 @@ public class PageService {
     }
 
     public Mono<Page> createPage(PageDto pageDto){
-        Optional<Book> book = bookRepository.findById(pageDto.getBooks().getId());
+        Optional<Book> book = bookRepository.findById(pageDto.getBook());
         Date date = new Date();
         LocalDateTime localDateTime = date.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -49,19 +49,20 @@ public class PageService {
 
     }
 
-    public Mono<Page> updatePage(Integer id, PageDto pageDto){
+    public Mono<Page> updatePage(Integer id, UpdatePageDto pageDto){
         Date date = new Date();
         LocalDateTime localDateTime = date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         Page currentPage = pageRepository.findById(id).orElseThrow(null);
+        Book book = bookRepository.findById(pageDto.getBook()).orElseThrow(null);
         Page page = new Page(
                 id,
                 pageDto.getTitle(),
                 pageDto.getContent(),
                 currentPage.getCreatedAt(),
                 localDateTime,
-                pageDto.getBooks()
+                book
         );
         return Mono.just(pageRepository.save(page));
     }
@@ -77,5 +78,8 @@ public class PageService {
             }
         }
         return new ResponseEntity<>("Page " + id + " not found", HttpStatus.NOT_FOUND);
+    }
+    public List<Page> getPageByBookId(Integer id){
+        return pageRepository.findByBook_Id(id);
     }
 }

@@ -28,6 +28,11 @@ public class PageController {
         return pageService.getPageById(id)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST)));
     }
+    @GetMapping("/{id}/book")
+    public ResponseEntity<List<Page>> getPageByBookId(@PathVariable Integer id){
+        List<Page> pageList = pageService.getPageByBookId(id);
+        return new ResponseEntity<>(pageList, HttpStatus.OK);
+    }
 
     @PostMapping("")
     public Mono<Page> createPage(@RequestBody PageDto pageDto){
@@ -36,7 +41,7 @@ public class PageController {
     }
 
     @PutMapping("/{id}")
-    public Mono<Page> updatePage(@PathVariable Integer id, @RequestBody PageDto pageDto){
+    public Mono<Page> updatePage(@PathVariable Integer id, @RequestBody UpdatePageDto pageDto){
         return pageService.updatePage(id, pageDto)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST)));
     }

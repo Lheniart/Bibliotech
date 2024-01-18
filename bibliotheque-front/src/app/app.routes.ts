@@ -5,6 +5,10 @@ import {RegisterComponent} from "./register/register.component";
 import {AccueilComponent} from "./accueil/accueil.component";
 import {CreateBookComponent} from "./create-book/create-book.component";
 import {UpdateBookComponent} from "./update-book/update-book.component";
+import {ProfileComponent} from "./profile/profile.component";
+import {UserInfoComponent} from "./user-info/user-info.component";
+import {MyBookComponent} from "./my-book/my-book.component";
+import {BookAllPageComponent} from "./book-all-page/book-all-page.component";
 
 export const routes: Routes = [
   {
@@ -22,7 +26,27 @@ export const routes: Routes = [
       {
         path: "updateBook/:id",
         component : UpdateBookComponent
+      },
+      {
+        path: "book/:id",
+        component: BookAllPageComponent
+      },
+      {
+        path: "profile",
+        component: ProfileComponent,
+        children: [
+          {
+            path:"info",
+            component: UserInfoComponent
+          },
+          {
+            path: "myBook",
+            component: MyBookComponent
+          }
+        ]
       }
+
+
     ]
   },
   {

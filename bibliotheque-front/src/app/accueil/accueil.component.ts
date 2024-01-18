@@ -18,9 +18,7 @@ import {Router, RouterLink} from "@angular/router";
     RouterLink
   ],
   template: `
-    <article class="grid" *ngIf="userData"  >
-      <a role="button" href="" routerLink="/createBook">Créer un livre</a>
-    </article>
+
     <article>
       <details class="dropdown">
         <summary>

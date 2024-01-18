@@ -139,5 +139,142 @@ export class ApiService {
     }
   }
 
+  updateUser(userId : number, data : Object){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.put("http://localhost:8080/user/"+userId, data, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+  resetPassword(userId : number, data : Object){
+    let token = localStorage.getItem('token')
+    console.log(data)
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.put("http://localhost:8080/user/resetPassword/"+userId, data, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+  getUserBook(userId : number){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.get(`http://localhost:8080/book/${userId}/user`, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+  getPageByBookId(bookId : number){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.get(`http://localhost:8080/page/${bookId}/book`, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+
+  updatePage(id: number, data: any){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.put(`http://localhost:8080/page/${id}`,data, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+
+  addNewPage(data : any){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.post(`http://localhost:8080/page`,data, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+  deletePage(id : number){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.delete(`http://localhost:8080/page/${id}`, httpOptions).pipe(
+        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+
 }
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Router, RouterOutlet} from "@angular/router";
+import {Router, RouterLink, RouterOutlet} from "@angular/router";
 import {ApiService} from "../api.service";
 import {NgIf} from "@angular/common";
 import {UserDataService} from "../user-data.service";
@@ -10,7 +10,8 @@ import {User} from "../Models/models";
   standalone: true,
   imports: [
     NgIf,
-    RouterOutlet
+    RouterOutlet,
+    RouterLink
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'

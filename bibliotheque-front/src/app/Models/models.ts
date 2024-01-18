@@ -42,3 +42,8 @@ export interface Page{
   updatedAt: string,
   book: object
 }
+export interface updatePageDto{
+  title: string,
+  content: string,
+  book: number
+}

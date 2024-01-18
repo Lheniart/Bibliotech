@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {ApiService} from "../api.service";
 import {Book, BookDto, Category, Page, User} from "../Models/models";
 import {FormsModule} from "@angular/forms";
@@ -14,10 +14,12 @@ import {check} from "typed-assert";
   imports: [
     FormsModule,
     NgForOf,
-    NgIf
+    NgIf,
+    RouterLink
   ],
   template: `
     <article>
+        <a role="button" routerLink="">ajouter une page</a>
       <form (submit)="submitBook($event)">
         <label for="title">
           Titre
@@ -77,6 +79,9 @@ import {check} from "typed-assert";
       </form>
     </article>
     <style>
+      a{
+        margin: 30px 0;
+      }
       #listUser {
         display: flex;
         flex-direction: row;
