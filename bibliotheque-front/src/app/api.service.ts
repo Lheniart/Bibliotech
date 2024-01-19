@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, Observable, of, tap, throwError} from "rxjs";
-import {resolve} from "@angular/compiler-cli";
-import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Injectable({
   providedIn: 'root'
@@ -23,13 +21,10 @@ export class ApiService {
   }
 
   register(registerDto: object) {
-    console.log("test")
     return this.http.post(`${this.baseUrl}/auth/register`, registerDto, {responseType: 'text'}).pipe(
       tap(response => {
-        console.log('API Response:', response);
       }),
       catchError(err => {
-        console.log(err)
         return throwError(() => new Error(err.error));
       })
     )
@@ -39,7 +34,6 @@ export class ApiService {
   getAllBook() {
     return this.http.get("http://localhost:8080/book").pipe(
       catchError(err => {
-        console.log(err);
         return of();
       })
     )
@@ -48,7 +42,6 @@ export class ApiService {
   getBookById(bookId: number) {
     return this.http.get(`http://localhost:8080/book/${bookId}`).pipe(
       catchError(err => {
-        console.log(err);
         return of();
       })
     )
@@ -57,7 +50,6 @@ export class ApiService {
   getAllCategory() {
     return this.http.get("http://localhost:8080/categories").pipe(
       catchError(err => {
-        console.log(err);
         return of();
       })
     )
@@ -68,7 +60,6 @@ export class ApiService {
     if (token) {
       return this.http.post("http://localhost:8080/auth/validToken", token).pipe(
         catchError(err => {
-          console.log(err);
           return of();
         })
       )
@@ -88,7 +79,6 @@ export class ApiService {
         })
       };
       return this.http.post("http://localhost:8080/book", data, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -107,9 +97,7 @@ export class ApiService {
           'Authorization': `Bearer ${token}`
         })
       };
-      console.log(data)
       return this.http.put(`http://localhost:8080/book/${bookId}`, data, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -129,7 +117,24 @@ export class ApiService {
         })
       };
       return this.http.get(`http://localhost:8080/user`, httpOptions).pipe(
-        tap(r => console.log(r)),
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Non connecté'));
+    }
+  }
+  getUserById(id : number){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.get(`http://localhost:8080/user/${id}`, httpOptions).pipe(
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -149,7 +154,6 @@ export class ApiService {
         })
       };
       return this.http.put("http://localhost:8080/user/"+userId, data, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -160,7 +164,6 @@ export class ApiService {
   }
   resetPassword(userId : number, data : Object){
     let token = localStorage.getItem('token')
-    console.log(data)
     if (token) {
       const httpOptions = {
         headers: new HttpHeaders({
@@ -169,7 +172,6 @@ export class ApiService {
         })
       };
       return this.http.put("http://localhost:8080/user/resetPassword/"+userId, data, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -188,7 +190,6 @@ export class ApiService {
         })
       };
       return this.http.get(`http://localhost:8080/book/${userId}/user`, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -207,7 +208,6 @@ export class ApiService {
         })
       };
       return this.http.get(`http://localhost:8080/page/${bookId}/book`, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -227,7 +227,6 @@ export class ApiService {
         })
       };
       return this.http.put(`http://localhost:8080/page/${id}`,data, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -247,7 +246,6 @@ export class ApiService {
         })
       };
       return this.http.post(`http://localhost:8080/page`,data, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -266,7 +264,6 @@ export class ApiService {
         })
       };
       return this.http.delete(`http://localhost:8080/page/${id}`, httpOptions).pipe(
-        tap(r => console.log(r)),
         catchError(err => {
           return throwError(() => new Error(err.message));
         })
@@ -275,6 +272,105 @@ export class ApiService {
       return throwError(() => new Error('Token non validé'));
     }
   }
+
+  updateCategory(id: number, name :string){
+    const data = {
+      label: name
+    }
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.put(`http://localhost:8080/categories/${id}`, data,httpOptions).pipe(
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+  addCategory(name :string){
+    const data = {
+      label: name
+    }
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        })
+      };
+      return this.http.post(`http://localhost:8080/categories`,data, httpOptions).pipe(
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+  deleteCategory(id : number){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        }),
+        responseType: 'text' as 'json'
+      };
+      return this.http.delete(`http://localhost:8080/categories/${id}`, httpOptions).pipe(
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+  deleteUser(id : number){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        }),
+        responseType: 'text' as 'json'
+      };
+      return this.http.delete(`http://localhost:8080/user/${id}`, httpOptions).pipe(
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+
+  deleBooke(id: number){
+    let token = localStorage.getItem('token')
+    if (token) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        }),
+        responseType: 'text' as 'json'
+      };
+      return this.http.delete(`http://localhost:8080/book/${id}`, httpOptions).pipe(
+        catchError(err => {
+          return throwError(() => new Error(err.message));
+        })
+      )
+    } else {
+      return throwError(() => new Error('Token non validé'));
+    }
+  }
+
 
 }
 

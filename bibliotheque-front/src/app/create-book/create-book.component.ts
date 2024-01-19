@@ -101,12 +101,10 @@ export class CreateBookComponent {
       })
       // @ts-ignore
       this.currentBook.user.push({id : this.userData?.id})
-      console.log(this.currentBook)
       this.apiService.createBook(this.currentBook).subscribe(response =>{
           alert("Livre ajouté")
           this.router.navigateByUrl("")
         },error => {
-          console.log(error)
           this.errorMessage = error.message
         }
       )
@@ -119,7 +117,6 @@ export class CreateBookComponent {
     this.apiService.getAllCategory().subscribe(response =>{
       // @ts-ignore
       this.listCategory = response
-      console.log(this.listCategory)
     })
     this.apiService.validateToken().subscribe(response => {
       // @ts-ignore

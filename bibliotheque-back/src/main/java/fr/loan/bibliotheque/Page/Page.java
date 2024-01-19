@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -42,6 +44,18 @@ public class Page {
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.book = book;
+    }
+
+    public Page(Book book) {
+        Date date = new Date();
+        LocalDateTime localDateTime = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        this.title = "Première page";
+        this.content = "";
+        this.createdAt = localDateTime;
+        this.updatedAt = localDateTime;
         this.book = book;
     }
 }

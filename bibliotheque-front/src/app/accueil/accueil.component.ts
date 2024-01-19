@@ -85,12 +85,10 @@ export class AccueilComponent {
     this.apiService.getAllBook().subscribe(response =>{
       // @ts-ignore
       this.listBook = response
-      console.log(this.listBook)
     })
     this.apiService.getAllCategory().subscribe(response =>{
       // @ts-ignore
       this.listCategory = response
-      console.log(this.listCategory)
     })
     this.apiService.validateToken().subscribe(response => {
       // @ts-ignore

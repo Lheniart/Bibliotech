@@ -14,8 +14,8 @@ import {NgIf} from "@angular/common";
     NgIf
   ],
   template: `
-    <article class="grid" style="text-align: center">
-      <button class="secondary" style="max-width: 300px" *ngIf="true" (click)="addNewPage($event)">Créer une nouvelle page
+    <article class="grid" style="text-align: center" *ngIf="calculateCondition()">
+      <button class="secondary" style="max-width: 300px" *ngIf="calculateCondition()" (click)="addNewPage($event)">Créer une nouvelle page
       </button>
     </article>
     <article>
@@ -77,9 +77,6 @@ export class BookAllPageComponent {
           this.listPage = r
           this.listPage?.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-          console.log(this.listPage);
-          // @ts-ignore
-          console.log(this.listPage[0])
         }
       )
     });
@@ -112,10 +109,8 @@ export class BookAllPageComponent {
     if (this.book.id != null) {
       this.updateBookDto.book = this.book.id
     }
-    console.log(this.updateBookDto)
     this.apiService.addNewPage(this.updateBookDto).subscribe(
       response =>{
-        console.log(response);
         alert("Nouvelle page ajoutée")
         window.location.reload()
       }

@@ -9,6 +9,10 @@ import {ProfileComponent} from "./profile/profile.component";
 import {UserInfoComponent} from "./user-info/user-info.component";
 import {MyBookComponent} from "./my-book/my-book.component";
 import {BookAllPageComponent} from "./book-all-page/book-all-page.component";
+import {AdminVueComponent} from "./admin-vue/admin-vue.component";
+import {CategoryListComponent} from "./category-list/category-list.component";
+import {UserGestionComponent} from "./user-gestion/user-gestion.component";
+import {UpdateUserComponent} from "./update-user/update-user.component";
 
 export const routes: Routes = [
   {
@@ -42,6 +46,24 @@ export const routes: Routes = [
           {
             path: "myBook",
             component: MyBookComponent
+          },
+          {
+            path: "admin",
+            component: AdminVueComponent,
+            children: [
+              {
+                path: "categories",
+                component: CategoryListComponent
+              },
+              {
+                path : "users",
+                component: UserGestionComponent
+              },
+              {
+                path: "user/:id",
+                component: UpdateUserComponent
+              }
+            ]
           }
         ]
       }

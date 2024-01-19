@@ -109,7 +109,6 @@ export class PageTemplateComponent {
     }
     this.apiService.updatePage(this.page.id, this.updateBookDto).subscribe(
       response =>{
-        console.log(response);
         alert("Page modifié")
         window.location.reload()
       },

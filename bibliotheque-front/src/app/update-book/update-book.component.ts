@@ -19,7 +19,6 @@ import {check} from "typed-assert";
   ],
   template: `
     <article>
-        <a role="button" routerLink="">ajouter une page</a>
       <form (submit)="submitBook($event)">
         <label for="title">
           Titre
@@ -77,6 +76,7 @@ import {check} from "typed-assert";
         <p id="errorMessage">{{ errorMessage }}</p>
         <button type="submit">Submit</button>
       </form>
+      <button id="inpDelete" (click)="deleteBook($event, id)">Supprimer</button>
     </article>
     <style>
       a{
@@ -89,6 +89,10 @@ import {check} from "typed-assert";
         justify-content: left;
         flex-wrap: wrap;
         gap: 50px;
+      }
+      #inpDelete{
+        max-width: 300px;
+        background-color: darkred;
       }
     </style>
 
@@ -141,25 +145,18 @@ export class UpdateBookComponent {
       response => {
         // @ts-ignore
         this.listUser = response
-        console.log(this.listUser)
       }
     )
     this.userDataService.getUserData().subscribe(userData => {
-      console.log(userData)
       this.userData = userData;
     });
 
     this.apiService.getBookById(this.id).subscribe(async response => {
-      console.log(response)
       // @ts-ignore
       this.currentBook = response
-      console.log(this.currentBook.users)
-      console.log(this.listUser)
       this.currentBook.users.some(user => {
         for (let userElement of this.listUser) {
           if (user.id == userElement.id) {
-            console.log("test")
-            console.log(user.id)
             userElement.checked = true
           }
         }
@@ -178,18 +175,9 @@ export class UpdateBookComponent {
       }
     )
 
-
   }
 
-  transformBookToBookDto(book: Book): BookDto {
-    return {
-      title: book.title,
-      resume: book.resume,
-      image: book.image,
-      categories: book.categories,
-      users: book.users // Assurez-vous que 'user' dans 'Book' et 'users' dans 'BookDto' sont du même type
-    };
-  }
+
 
   submitBook(event: Event) {
     const checkedCategories = this.listCategory.filter(category => category.checked);
@@ -199,14 +187,12 @@ export class UpdateBookComponent {
     this.bookDto.categories = checkedCategories;
     this.bookDto.image = this.currentBook.image;
     this.bookDto.users = checkedUsers;
-    console.log(this.bookDto)
     this.apiService.updateBook(this.id, this.bookDto).subscribe(
       response =>{
         alert("Livre modifier")
         this.router.navigateByUrl("")
       },
       error => {
-        console.log(error)
         alert("Erreur : " + error.message)
         this.router.navigateByUrl("")
       }
@@ -219,13 +205,23 @@ export class UpdateBookComponent {
     this.listCategory = this.listCategory.map(cat =>
       cat.id === category.id ? {...cat, checked: event.target.checked} : cat
     );
-    console.log(this.listCategory);
   }
 
   updateCheckedUsers(user: User, event: any) {
     this.listUser = this.listUser.map(cat =>
       cat.id === user.id ? {...cat, checked: event.target.checked} : cat
     );
-    console.log(this.listUser);
+  }
+  deleteBook(event : Event, id : number){
+    this.apiService.deleBooke(this.id).subscribe(
+      response =>{
+        alert("Livre supprimé")
+        this.router.navigateByUrl("")
+      },
+      error => {
+        alert("Erreur : " + error.message)
+        this.router.navigateByUrl("")
+      }
+    )
   }
 }

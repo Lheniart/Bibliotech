@@ -79,4 +79,10 @@ public class Book {
         this.categories = categories;
         this.users = users;
     }
+
+    public void addUsers(User currentUser) {
+        if (currentUser!= null){
+            users.add(currentUser);
+        }
+    }
 }

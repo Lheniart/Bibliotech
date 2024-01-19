@@ -100,7 +100,6 @@ export class UserInfoComponent {
   ngOnInit() {
     this.apiService.validateToken().subscribe(
       response => {
-        console.log(response)
         //@ts-ignore
         this.updateDto.email = response.email
         //@ts-ignore
@@ -109,7 +108,6 @@ export class UserInfoComponent {
         this.updateDto.firstName = response.firstName;
         //@ts-ignore
         this.userId = response.id
-        console.log(this.userId)
       },
       error => {
         this.router.navigateByUrl("")
@@ -129,7 +127,6 @@ export class UserInfoComponent {
 
   updateInfo(event: Event) {
     this.errorMessage = ""
-    console.log(this.updateDto)
     this.apiService.updateUser(this.userId, this.updateDto).subscribe(
       response => {
         alert("Utilisateur modifier")

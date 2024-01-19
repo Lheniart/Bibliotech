@@ -46,7 +46,6 @@ export class RegisterComponent {
 
   register(event : Event){
     this.errorMessage = ""
-    console.log(this.registerDto)
     this.apiService.register(this.registerDto).subscribe(
       response =>{
         alert("Inscription réussite")

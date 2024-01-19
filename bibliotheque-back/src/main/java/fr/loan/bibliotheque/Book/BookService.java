@@ -3,6 +3,8 @@ package fr.loan.bibliotheque.Book;
 import fr.loan.bibliotheque.Categories.Categories;
 import fr.loan.bibliotheque.Categories.CategoriesRepository;
 import fr.loan.bibliotheque.Categories.CategoriesService;
+import fr.loan.bibliotheque.Page.Page;
+import fr.loan.bibliotheque.Page.PageRepository;
 import fr.loan.bibliotheque.Role.Role;
 import fr.loan.bibliotheque.Role.RoleRepository;
 import fr.loan.bibliotheque.User.Dto.SimpleUserDTO;
@@ -35,6 +37,7 @@ public class BookService {
     private final CategoriesRepository categoriesRepository;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final PageRepository pageRepository;
 
     public List<BookOut> getBooks() {
         List<Book> books = bookRepository.findAll();
@@ -73,6 +76,11 @@ public class BookService {
     }
 
     public Mono<Book> createBook(BookDto bookDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        User currentUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(null);
+        System.out.println(principal.getUsername());
         List<Categories> categories = bookDto.getCategories();
         List<Integer> categoriesId = categories.stream()
                 .map(Categories::getId)
@@ -80,9 +88,10 @@ public class BookService {
         categories = categoriesRepository.findAllById(categoriesId);
 
         List<User> users = bookDto.getUsers();
-        List<Integer> usersId = users.stream()
+        users.add(currentUser);
+        List<Integer> usersId = new ArrayList<>(users.stream()
                 .map(User::getId)
-                .toList();
+                .toList());
         Date date = new Date();
         LocalDateTime localDateTime = date.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -97,7 +106,11 @@ public class BookService {
                 categories,
                 users
         );
-        return Mono.just(bookRepository.save(book));
+        Book bookSaved = bookRepository.save(book);
+        pageRepository.save(new Page(
+                book
+        ));
+        return Mono.justOrEmpty(bookSaved);
     }
 
     public Mono<Book> updateBook(Integer id, BookDto bookDto) {
@@ -126,6 +139,7 @@ public class BookService {
                             existingBook.setUpdatedAt(localDateTime);
                             existingBook.setCategories(bookDto.getCategories());
                             existingBook.setUsers(bookDto.getUsers());
+                            existingBook.addUsers(currentUser);
 
                             // Enregistrer les modifications dans la base de données
                             return Mono.just(bookRepository.save(existingBook));

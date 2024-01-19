@@ -53,7 +53,6 @@ export class MyBookComponent {
           response =>{
             // @ts-ignore
             this.listBook = response
-            console.log(this.listBook)
           }
         )
 
