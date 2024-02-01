@@ -23,7 +23,7 @@ import {Router} from "@angular/router";
           <input type="text" id="title" name="title" placeholder="Titre" [(ngModel)]="currentBook.title" required>
         </label>
         <label for="resume">
-          Résumée
+          Résumé
           <textarea id="longText" name="longText" rows="4" cols="50" [(ngModel)]="currentBook.resume" style="resize: none;">
           </textarea>
         </label>
