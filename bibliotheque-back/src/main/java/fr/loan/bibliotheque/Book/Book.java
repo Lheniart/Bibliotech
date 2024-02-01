@@ -32,7 +32,7 @@ public class Book {
     @Column(name = "resume", columnDefinition="TEXT")
     private String resume;
 
-    @Column(name = "image")
+    @Column(name = "image", columnDefinition="TEXT")
     private String image;
 
     @Column(name = "createdAt")

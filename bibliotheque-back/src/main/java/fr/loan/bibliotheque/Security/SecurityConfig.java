@@ -64,6 +64,8 @@ public class SecurityConfig {
                     auth.requestMatchers("/auth/**","book","book/{id}").permitAll();
                     auth.requestMatchers(HttpMethod.GET,"/categories/**", "categories/{id}").permitAll();
                     auth.requestMatchers(HttpMethod.GET,"/user/**").authenticated();
+                    auth.requestMatchers("book/{id}/user").authenticated();
+                    auth.requestMatchers("page/**").authenticated();
                     auth.requestMatchers("/categories/**","/user/**").hasAuthority("ADMIN");
                     auth.anyRequest().hasAuthority("USER");
                 })
