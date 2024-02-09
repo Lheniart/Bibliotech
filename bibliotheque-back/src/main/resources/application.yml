@@ -1,9 +1,11 @@
 spring:
   datasource:
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/bibliotheque
-    username: postgres
-
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:identifier.sqlite
+    username:
+    password:
   jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    show-sql: true
     hibernate:
       ddl-auto: update
